@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: qrcode-api-laravel
+    container_name: qr-api-app
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=qrcode-api
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+    ports:
+      - 80:80
+    networks:
+      - qrcode-api-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: qrcode-api-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: qrcode-api
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - qrcode-api-network
+    ports:
+      - 3306:3306
+
+networks:
+  qrcode-api-network:
+    driver: bridge
+
+volumes:
+  db_data:
